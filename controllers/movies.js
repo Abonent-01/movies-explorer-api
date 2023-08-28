@@ -1,20 +1,46 @@
-const Card = require('../models/card');
+const Movie = require('../models/movie')
 
 const ERROR_CODE_WRONG_DATA = require('../error/wrongDataError');
 const ERROR_CODE_NOT_FOUND = require('../error/notFoundError');
 const ERROR_CODE_FORBIDDEN = require('../error/forbiddenError');
 
-module.exports.getCards = (req, res, next) => {
-  Card.find({})
-    .then((cards) => res.send(cards))
+module.exports.getMovies = (req, res, next) => {
+  const owner = req.user._id;
+  Card.find({owner})
+    .then((movies) => res.send(movies))
     .catch(next);
 };
 
-module.exports.createCard = (req, res, next) => {
-  const { _id } = req.user;
-  const { name, link } = req.body;
-  Card.create({ name, link, owner: _id })
-    .then((card) => res.send(card))
+module.exports.createMovie = (req, res, next) => {
+  const owner = req.user._id;
+  const {
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailerLink,
+    thumbnail,
+    movieId,
+    nameEN,
+    nameRU,
+  } = req.body;
+  Movie.create({
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailerLink,
+    thumbnail,
+    owner,
+    movieId,
+    nameEN,
+    nameRU,
+  })
+    .then((movies) => res.send(movies))
     .catch((err) => {
       if (err.name = "ValidationError") {
         next(new ERROR_CODE_WRONG_DATA(`ValidationError`));
@@ -24,56 +50,20 @@ module.exports.createCard = (req, res, next) => {
     });
 }
 
-module.exports.deleteCard = (req, res, next) => {
-  const removeCard = () => {
-    Card.findByIdAndRemove(req.params.cardId)
-      .then((card) => res.send(card))
+module.exports.deleteMovie = (req, res, next) => {
+  const ereaseMovie = () => {
+    Movie.findByIdAndRemove(req.params._id)
+      .then((movie) => res.send(movie))
       .catch(next);
   };
 
-  Card.findById(req.params.cardId)
-    .then((card) => {
-      if (!card) next(new ERROR_CODE_NOT_FOUND(`Error...`));
-      if (req.user._id === card.owner.toString()) {
-        return removeCard();
+  Movie.findById(req.params._id)
+    .then((movie) => {
+      if (!movie) next(new ERROR_CODE_NOT_FOUND(`Error...`));
+      if (req.user._id === movie.owner.toString()) {
+        return ereaseMovie();
       }
       return next(new ERROR_CODE_FORBIDDEN('Error...'));
     })
     .catch(next);
-};
-
-module.exports.likeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .then((card) => {
-      if (!card) {
-        throw new ERROR_CODE_NOT_FOUND('Error...');
-      } else {
-        next(res.send(card));
-      }
-    })
-    .catch((err) =>{
-      if (err.name === "CastError") {
-        next(new ERROR_CODE_WRONG_DATA('Error...'))
-      } else {
-        next(err);
-      }
-    })
-};
-
-module.exports.dislikeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .then((card) => {
-      if (!card) {
-        throw new ERROR_CODE_NOT_FOUND(`Error...`)
-      } else {
-        res.send(card);
-      }
-    })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        next(new ERROR_CODE_WRONG_DATA(`Error...`));
-      } else {
-        next(err);
-      }
-    });
 };
