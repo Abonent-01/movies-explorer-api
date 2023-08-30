@@ -14,7 +14,7 @@ const { PORT = 3000, DATA_BASE = 'mongodb://127.0.0.1:27017/bitfilmsdb' } = proc
 const app = express();
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'https://server.nomoreparties.co', 'http://server.nomoreparties.co', 'https://api.server.students.nomoreparties.co', 'http://api.server.students.nomoreparties.co'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'https://neserver.nomoredomainsicu.ru', 'http://neserver.nomoredomainsicu.ru'/*, 'https://api.server.students.nomoreparties.co', 'http://api.server.students.nomoreparties.co'*/],
   credentials: true,
 }));
 
