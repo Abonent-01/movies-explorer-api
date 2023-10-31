@@ -19,7 +19,7 @@ mongoose.connect(DATA_BASE, {
 
 const app = express();
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'https://neserver.nomoredomainsrocks.ru', 'http://neserver.nomoredomainsrocks.ru', 'https://api.neserver.nomoredomainsicu.ru', 'http://api.neserver.nomoredomainsicu.ru'],
+  origin: ['http://localhost:3001', 'https://server.nomoreparties.co', 'http://server.nomoreparties.co'],
   credentials: true,
 }));
 
